@@ -8,7 +8,7 @@ let employeeData = [];
 
 
 // -------------------------------
-// FETCH FUNCTIONS
+// FETCHY FUNCTIONS
 // -------------------------------
 
 function fetchData(url) {
@@ -33,6 +33,7 @@ fetchData('https://randomuser.me/api/?results=12')
 // generates and adds the gallery HTML from the request, and then adds the event listener
 function generateGalleryItems(data) {
   let galleryHTML = '';
+
   for (let item of data) {
     let itemHTML = `
       <div class="card ${item.login.uuid}">
@@ -53,27 +54,50 @@ function generateGalleryItems(data) {
   setListener(cards);
 }
 
-
-// gets card information, matches to the json data, builds and display html
-function displayItem(card) {
+// gets card information, matches to the json data, builds and display html, sets the close button
+function generateModal(card) {
   // get the uuid from the div class list
   itemUUID = this.classList[1];
   console.log(itemUUID);
 
-  // match data with card clicked
-  let itemData = {};
-    // let's use reduce method here instead of a loop
-
+  // filter for just id clicked
+  let itemData = employeeData.filter(item => item.login.uuid === itemUUID);
   // build and insert HTML with data
 
+  // create the model div element and give it a class
+  let modalDiv = document.createElement('div');
+  modalDiv.classList.add('modal-container');
+
+  // insert it into the document
+  gallery.insertAdjacentElement('afterend', modalDiv);
+
+  // create the html with data
+  let modalHTML = `
+      <div class="modal">
+        <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+        <div class="modal-info-container">
+          <img class="modal-img" src="${itemData[0].picture.large}">
+          <h3 id="name" class="modal-name cap">${itemData[0].name.first} ${itemData[0].name.last}</h3>
+          <p class="modal-text">${itemData[0].email}</p>
+          <p class="modal-text cap">city</p>
+          <hr>
+          <p class="modal-text">${itemData[0].phone}</p>
+          <p class="modal-text">${itemData[0].location.street}, ${itemData[0].location.city}, ${itemData[0].location.state} ${itemData[0].location.postcode}</p>
+          <p class="modal-text">Birthday: ${itemData[0].dob.date}</p>
+        </div>
+      </div>
+  `;
+
+  // insert the html into the div
+  modalDiv.innerHTML = modalHTML;
 
   // set the close button
+  let closeButton = document.querySelector('#modal-close-btn');
+  closeButton.addEventListener('click', function(){
+    modalDiv.parentNode.removeChild(modalDiv);
+  });
 
 }
-
-
-
-
 
 // -------------------------------
 // LISTENER FUNCTIONS
@@ -82,7 +106,7 @@ function displayItem(card) {
 // sets a click listener on each card div, runs after fetch promise resolved
 function setListener(cards) {
   for (let card of cards) {
-    card.addEventListener('click', displayItem);
+    card.addEventListener('click', generateModal);
   }
 }
 
