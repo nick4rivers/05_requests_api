@@ -19,12 +19,10 @@ function fetchData(url) {
     // .then(data => console.log(data.results[0]));
 }
 
-
 fetchData('https://randomuser.me/api/?results=12')
   .then(data => data.results)
   .then(data => employeeData = data)
   .then(data => generateGalleryItems(data));
-
 
 // -------------------------------
 // HELPER FUNCTIONS
@@ -58,10 +56,14 @@ function generateGalleryItems(data) {
 function generateModal(card) {
   // get the uuid from the div class list
   itemUUID = this.classList[1];
-  console.log(itemUUID);
-
+  
   // filter for just id clicked
   let itemData = employeeData.filter(item => item.login.uuid === itemUUID);
+
+  // format date of birth string
+  let dobDate = new Date(Date.parse(itemData[0].dob.date));
+  let itemDob = `${dobDate.getMonth() + 1}/${dobDate.getDate()}/${dobDate.getFullYear().toString().substr(-2)}`;
+
   // build and insert HTML with data
 
   // create the model div element and give it a class
@@ -83,7 +85,7 @@ function generateModal(card) {
           <hr>
           <p class="modal-text">${itemData[0].phone}</p>
           <p class="modal-text">${itemData[0].location.street}, ${itemData[0].location.city}, ${itemData[0].location.state} ${itemData[0].location.postcode}</p>
-          <p class="modal-text">Birthday: ${itemData[0].dob.date}</p>
+          <p class="modal-text">Birthday: ${itemDob}</p>
         </div>
       </div>
   `;
@@ -109,5 +111,4 @@ function setListener(cards) {
     card.addEventListener('click', generateModal);
   }
 }
-
 
